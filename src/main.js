@@ -1,4 +1,4 @@
-import MainPresenter from "./presenter/main-presenter";
+import MainPresenter from './presenter/main-presenter';
 
 const currentPresenter = new MainPresenter();
 
