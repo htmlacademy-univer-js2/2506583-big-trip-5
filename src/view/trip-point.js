@@ -1,4 +1,4 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
 function createTripPointTemplate(){
   return `<li class="trip-events__item">
@@ -42,7 +42,7 @@ function createTripPointTemplate(){
                 <span class="visually-hidden">Open event</span>
               </button>
             </div>
-          </li>`
+          </li>`;
 }
 
 export default class TripPoint{

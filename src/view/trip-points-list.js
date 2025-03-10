@@ -1,8 +1,7 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
 function createTripPointsListTemplate(){
-  retutn `<ul class="trip-events__list">
-          </ul>`
+  return `<ul class="trip-events__list"></ul>`;
 }
 
 export default class TripPointsList {

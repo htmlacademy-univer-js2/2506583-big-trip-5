@@ -1,6 +1,6 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
-const SORT_ELEMENTS = ['Day', 'Event', 'Time', 'Price', 'Offers']
+const SORT_ELEMENTS = ['Day', 'Event', 'Time', 'Price', 'Offers'];
 
 
 const createSortItemTemplate = (type) =>
