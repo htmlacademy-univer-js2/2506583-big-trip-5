@@ -1,6 +1,6 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
-const FILTER_ELEMENTS = ['Everything', 'Future', 'Present', 'Past', 'Accept filter']
+const FILTER_ELEMENTS = ['Everything', 'Future', 'Present', 'Past', 'Accept filter'];
 
 
 const createFilterItemTemplate = (type) =>
