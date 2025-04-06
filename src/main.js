@@ -1,5 +1,11 @@
-import MainPresenter from './presenter/main-presenter';
+import MainPresenter from './presenter/main-presenter.js';
+import TripPointModel from './model/trip-point-model.js';
 
-const currentPresenter = new MainPresenter();
+const tripControlFilters = document.querySelector('.trip-controls__filters');
+const tripEvents = document.querySelector('.trip-events');
 
-currentPresenter.init();
+const tripPoint = new TripPointModel();
+
+const mainPresenter = new MainPresenter(tripEvents, tripControlFilters, tripPoint);
+
+mainPresenter.init();
