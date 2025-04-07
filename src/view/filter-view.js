@@ -31,4 +31,3 @@ export default class Filter{
     this.element = null;
   }
 }
-

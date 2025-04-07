@@ -21,4 +21,3 @@ export default class TripPointsList {
     this.element = null;
   }
 }
-
