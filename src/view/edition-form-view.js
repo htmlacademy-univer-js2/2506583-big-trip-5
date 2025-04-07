@@ -108,3 +108,4 @@ export default class EditionForm {
     this.element = null;
   }
 }
+

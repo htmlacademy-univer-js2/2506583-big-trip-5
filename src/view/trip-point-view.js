@@ -79,3 +79,5 @@ export default class TripPointView{
     this.element = null;
   }
 }
+
+

@@ -180,3 +180,4 @@ export default class CreationForm {
     this.element = null;
   }
 }
+
