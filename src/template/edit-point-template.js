@@ -8,8 +8,16 @@ const createPointTypesTemplate = () => `
     <legend class="visually-hidden">Event type</legend>
     ${POINT_TYPES.map((type) => `
       <div class="event__type-item">
-        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}>
-        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">
+        <input
+          id="event-type-${type}-1"
+          class="event__type-input  visually-hidden"
+          type="radio" name="event-type"
+          value="${type}"
+        >
+        <label
+          class="event__type-label  event__type-label--${type}"
+          for="event-type-${type}-1"
+        >
           ${capitalize(type)}
         </label>
       </div>
@@ -23,15 +31,23 @@ const createPointCitiesTemplate = () => `
   </datalist>
 `;
 
-const createOffersTemplate = ({ offers, offerIds }) => `
+const createOffersTemplate = ({ currentOffers, selectedOffers }) => `
   <div class="event__available-offers">
-    ${offers.map((offer) => {
+    ${currentOffers.map((offer) => {
     const offerType = getLastWord(offer.title);
-    const checked = offerIds.some((offerId) => offerId === offer.id) ? 'checked' : '';
+    const checked = selectedOffers.some((offerId) => offerId === offer.id) ? 'checked' : '';
     return `
-      <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-${offer.id}" type="checkbox" name="event-offer-${offerType}" ${checked}>
-        <label class="event__offer-label" for="event-offer-${offerType}-${offer.id}">
+    <div class="event__offer-selector">
+        <input
+          class="event__offer-checkbox  visually-hidden"
+          id="event-offer-${offerType}-${offer.id}"
+          type="checkbox" name="event-offer-${offerType}"
+          ${checked}
+        >
+        <label
+          class="event__offer-label"
+          for="event-offer-${offerType}-${offer.id}"
+        >
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
@@ -42,16 +58,19 @@ const createOffersTemplate = ({ offers, offerIds }) => `
   </div>
 `;
 
-const createDestinationPhotosTemplate = ({ destination }) => `
+const createDestinationPhotosTemplate = ({ currentDestination }) => `
   <div class="event__photos-tape">
-    ${destination.pictures.map((picture) => `
+    ${currentDestination.pictures.map((picture) => `
       <img class="event__photo" src="${picture.src}" alt="${picture.description}">
     `).join('')}
   </div>
 `;
 
-export const createEditPointTemplate = ({ point, destination, offers }) => {
-  const { basePrice, dateFrom, dateTo, offers: offerIds, type } = point;
+export const createEditPointTemplate = ({ point, destinations, offers }) => {
+  const { basePrice, dateFrom, dateTo, offers: selectedOffers, type } = point;
+
+  const currentDestination = destinations.find((destination) => destination.id === point.destination);
+  const currentOffers = offers.find((offer) => offer.type === type).offers;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -64,7 +83,7 @@ export const createEditPointTemplate = ({ point, destination, offers }) => {
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
             <div class="event__type-list">
-              ${createPointTypesTemplate()}}
+              ${createPointTypesTemplate()}
             </div>
           </div>
 
@@ -72,16 +91,35 @@ export const createEditPointTemplate = ({ point, destination, offers }) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${capitalize(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input
+              class="event__input  event__input--destination"
+              id="event-destination-1"
+              type="text"
+              name="event-destination"
+              value="${currentDestination.name}"
+              list="destination-list-1"
+            >
             ${createPointCitiesTemplate()}
           </div>
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatStringToDateTime(dateFrom)}">
+            <input
+              class="event__input  event__input--time"
+              id="event-start-time-1"
+              type="text"
+              name="event-start-time"
+              value="${formatStringToDateTime(dateFrom)}"
+            >
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatStringToDateTime(dateTo)}">
+            <input
+              class="event__input  event__input--time"
+              id="event-end-time-1"
+              type="text"
+              name="event-end-time"
+              value="${formatStringToDateTime(dateTo)}
+            >
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -99,21 +137,20 @@ export const createEditPointTemplate = ({ point, destination, offers }) => {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
+        ${currentOffers.length ? `<section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createOffersTemplate({ ...offers, offerIds })}
+              ${createOffersTemplate({ currentOffers, selectedOffers })}
             </div>
-          </section>
-
-          <section class="event__section  event__section--destination">
+          </section>` : ''}
+        ${currentDestination ? `<section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destination.description}</p>
+            <p class="event__destination-description">${currentDestination.description}</p>
             <div class="event__photos-container">
-              ${createDestinationPhotosTemplate({ destination })}
+              ${createDestinationPhotosTemplate({ currentDestination })}
             </div>
-          </section>
+          </section>` : ''}
         </section>
       </form>
     </li>
