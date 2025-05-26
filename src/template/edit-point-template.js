@@ -31,40 +31,71 @@ const createPointCitiesTemplate = () => `
   </datalist>
 `;
 
-const createOffersTemplate = ({ currentOffers, selectedOffers }) => `
+const createOffersTemplate = ({ offers, selectedOffers }) => `
   <div class="event__available-offers">
-    ${currentOffers.map((offer) => {
+    ${offers.map((offer) => {
     const offerType = getLastWord(offer.title);
     const checked = selectedOffers.some((offerId) => offerId === offer.id) ? 'checked' : '';
     return `
     <div class="event__offer-selector">
-        <input
-          class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${offerType}-${offer.id}"
-          type="checkbox" name="event-offer-${offerType}"
-          ${checked}
-        >
-        <label
-          class="event__offer-label"
-          for="event-offer-${offerType}-${offer.id}"
-        >
-          <span class="event__offer-title">${offer.title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>
-    `;
+      <input
+        class="event__offer-checkbox  visually-hidden"
+        id="event-offer-${offerType}-${offer.id}"
+        type="checkbox"
+        name="event-offer-${offerType}"
+        data-offer-id="${offer.id}"
+        ${checked}
+      >
+      <label
+        class="event__offer-label"
+        for="event-offer-${offerType}-${offer.id}"
+      >
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>`;
   }).join('')}
   </div>
 `;
 
-const createDestinationPhotosTemplate = ({ currentDestination }) => `
+const createDestinationPhotosTemplate = ({ destination }) => `
   <div class="event__photos-tape">
-    ${currentDestination.pictures.map((picture) => `
+    ${destination.pictures.map((picture) => `
       <img class="event__photo" src="${picture.src}" alt="${picture.description}">
     `).join('')}
   </div>
 `;
+
+const createOffersSectionTemplate = ({ offers, selectedOffers }) => `
+  <section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${createOffersTemplate({ offers, selectedOffers })}
+    </div>
+  </section>
+`;
+
+const createDestinationSectionTemplate = ({ destination }) => {
+  if (!destination.pictures.length && !destination.description.length) {
+    return '';
+  }
+
+  return `
+    <section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      ${destination.description.length
+    ? `<p class="event__destination-description">
+        ${destination.description}
+      </p>` : ''}
+
+      ${destination.pictures.length
+    ? `<div class="event__photos-container">
+        ${createDestinationPhotosTemplate({ destination })}
+      </div>` : ''}
+
+    </section>`;
+};
 
 export const createEditPointTemplate = ({ point, destinations, offers }) => {
   const { basePrice, dateFrom, dateTo, offers: selectedOffers, type } = point;
@@ -96,7 +127,7 @@ export const createEditPointTemplate = ({ point, destinations, offers }) => {
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${currentDestination.name}"
+              value="${currentDestination?.name}"
               list="destination-list-1"
             >
             ${createPointCitiesTemplate()}
@@ -137,20 +168,8 @@ export const createEditPointTemplate = ({ point, destinations, offers }) => {
           </button>
         </header>
         <section class="event__details">
-        ${currentOffers.length ? `<section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-            <div class="event__available-offers">
-              ${createOffersTemplate({ currentOffers, selectedOffers })}
-            </div>
-          </section>` : ''}
-        ${currentDestination ? `<section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${currentDestination.description}</p>
-            <div class="event__photos-container">
-              ${createDestinationPhotosTemplate({ currentDestination })}
-            </div>
-          </section>` : ''}
+          ${currentOffers.length ? createOffersSectionTemplate({ offers: currentOffers, selectedOffers }) : ''}
+          ${currentDestination ? createDestinationSectionTemplate({ destination: currentDestination }) : ''}
         </section>
       </form>
     </li>

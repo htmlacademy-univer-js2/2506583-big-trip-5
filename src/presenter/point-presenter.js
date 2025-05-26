@@ -121,7 +121,7 @@ export default class PointPresenter {
   };
 
   #onEditPointSubmit = (updatePoint) => {
-    this.#point = updatePoint;
+    this.#handleDataChange(updatePoint);
     this.#switchToPoint();
   };
 }
