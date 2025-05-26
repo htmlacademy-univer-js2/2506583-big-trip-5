@@ -1,14 +1,19 @@
+import { UpdateType } from '../const';
 import Observable from '../framework/observable';
+import { adaptToClient, adaptToServer } from '../utils/adapter';
 import { updateItem } from '../utils/common';
 
 export default class PointsModel extends Observable {
   #service = null;
+  #destinationsModel = null;
+  #offersModel = null;
   #points = [];
 
-  constructor({ service }) {
+  constructor({ service, destinationsModel, offersModel }) {
     super();
     this.#service = service;
-    this.#points = this.#service.getPoints();
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   getAll() {
@@ -19,16 +24,39 @@ export default class PointsModel extends Observable {
     return this.#points.find((point) => point.id === id);
   }
 
+  async init() {
+    try {
+      await Promise.all([
+        this.#destinationsModel.init(),
+        this.#offersModel.init(),
+      ]);
+
+      const points = await this.#service.getPoints();
+      this.#points = points.map(adaptToClient);
+      this._notify(UpdateType.INIT, {});
+    } catch (error) {
+      this.#points = [];
+      this._notify(UpdateType.INIT, { error });
+    }
+  }
+
   add(type, point) {
     const newPoint = this.#service.addPoint(point);
     this.#points.push(newPoint);
     this._notify(type, newPoint);
   }
 
-  update(type, point) {
-    const updatedPoint = this.#service.updatePoint(point);
-    this.#points = updateItem(this.#points, updatedPoint);
-    this._notify(type, updatedPoint);
+  async update(type, point) {
+    try {
+      const adaptedToServerPoint = adaptToServer(point);
+      const updatedPoint = await this.#service.updatePoint(adaptedToServerPoint);
+      const adaptedToClientPoint = adaptToClient(updatedPoint);
+
+      this.#points = updateItem(this.#points, adaptedToClientPoint);
+      this._notify(type, adaptedToClientPoint);
+    } catch {
+      throw new Error('Can\'t update point');
+    }
   }
 
   delete(type, deletedPoint) {

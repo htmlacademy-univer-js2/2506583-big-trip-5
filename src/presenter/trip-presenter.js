@@ -1,5 +1,5 @@
-import { PointListView, EmptyListView } from '../view';
-import { render, remove } from '../framework/render.js';
+import { PointListView, EmptyListView, LoadingView } from '../view';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import { NewPointPresenter, PointPresenter, SortPresenter } from '../presenter';
 import { sort } from '../utils/sort.js';
 import { filterMethod } from '../utils/filter.js';
@@ -8,6 +8,7 @@ import { PointFilters, SortType, UpdateType, UserAction } from '../const.js';
 export default class TripPresenter {
   #container = null;
   #emptyListComponent = null;
+  #loadingComponent = new LoadingView();
   #pointListComponent = new PointListView();
 
   #destinationsModel = null;
@@ -18,9 +19,12 @@ export default class TripPresenter {
   #pointPresenters = new Map();
   #newPointPresenter = null;
   #newPointButtonPresenter = null;
-  #isCreating = false;
   #sortPresenter = null;
   #currentSortType = SortType.DAY;
+
+  #isCreating = false;
+  #isLoading = true;
+  #isError = false;
 
   constructor({
     container,
@@ -79,6 +83,16 @@ export default class TripPresenter {
   };
 
   #renderTrip = () => {
+    if (this.#isLoading) {
+      this.#renderLoader();
+      return;
+    }
+
+    if (this.#isError) {
+      this.#clearTrip({ resetSortType: true });
+      return;
+    }
+
     if (!this.points.length && !this.#isCreating) {
       this.#renderEmptyList();
       return;
@@ -92,6 +106,7 @@ export default class TripPresenter {
   #clearTrip = ({ resetSortType = false } = {}) => {
     this.#clearPoints();
     remove(this.#emptyListComponent);
+    remove(this.#loadingComponent);
     if (this.#sortPresenter) {
       this.#sortPresenter.destroy();
       this.#sortPresenter = null;
@@ -110,6 +125,10 @@ export default class TripPresenter {
     });
 
     this.#sortPresenter.init();
+  };
+
+  #renderLoader = () => {
+    render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
   };
 
   #renderPointList = () => {
@@ -161,6 +180,15 @@ export default class TripPresenter {
 
   #handleModelChange = (updateType, data) => {
     switch (updateType) {
+      case UpdateType.INIT:
+        if (data.error) {
+          this.#isError = true;
+        } else {
+          this.#isLoading = false;
+          remove(this.#loadingComponent);
+        }
+        this.#renderTrip();
+        break;
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);
         break;

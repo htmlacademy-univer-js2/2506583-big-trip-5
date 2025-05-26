@@ -1,5 +1,4 @@
-import { ButtonLabel, EditType, POINT_TYPES } from '../const';
-import { POINT_DESTINATIONS } from '../mock/const';
+import { ButtonLabel, EditType, POINT_TYPES, POINT_DESTINATIONS } from '../const';
 import { formatStringToDateTime } from '../utils/point';
 import { capitalize, getLastWord } from '../utils/common';
 import he from 'he';

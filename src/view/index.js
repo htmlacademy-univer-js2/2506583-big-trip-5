@@ -6,6 +6,7 @@ import TripInfoView from './trip-info-view';
 import SortView from './sort-view';
 import EmptyListView from './empty-list-view';
 import NewPointButtonView from './new-point-button-view';
+import LoadingView from './loading-view';
 
 export {
   EditPointView,
@@ -16,4 +17,5 @@ export {
   SortView,
   EmptyListView,
   NewPointButtonView,
+  LoadingView,
 };

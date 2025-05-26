@@ -7,7 +7,6 @@ export default class DestinationsModel extends Observable {
   constructor({ service }) {
     super();
     this.#service = service;
-    this.#destinations = this.#service.getDestinations();
   }
 
   getAll() {
@@ -16,5 +15,10 @@ export default class DestinationsModel extends Observable {
 
   getById(id) {
     return this.#destinations.find((destination) => destination.id === id);
+  }
+
+  async init() {
+    this.#destinations = await this.#service.getDestinations();
+    return this.#destinations;
   }
 }
