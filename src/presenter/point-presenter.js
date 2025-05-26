@@ -1,6 +1,7 @@
-import { Mode } from '../const';
+import { EditType, Mode, UpdateType, UserAction } from '../const';
 import { remove, render, replace } from '../framework/render';
 import { isEscapeKey } from '../utils/common';
+import { isBigDifference } from '../utils/point';
 import { EditPointView, PointView } from '../view';
 
 export default class PointPresenter {
@@ -22,14 +23,14 @@ export default class PointPresenter {
     container,
     destinationsModel,
     offersModel,
-    handleDataChange,
-    handleModeChange
+    onDataChange,
+    onModeChange
   }) {
     this.#container = container;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
-    this.#handleDataChange = handleDataChange;
-    this.#handleModeChange = handleModeChange;
+    this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(point) {
@@ -41,16 +42,18 @@ export default class PointPresenter {
       point: this.#point,
       destination: this.#destinationsModel.getById(point.destination),
       offers: this.#offersModel.getByType(point.type),
-      onEditClick: this.#onEditPointClick,
-      onFavoriteClick: this.#onFavoriteClick,
+      onEditClick: this.#handleEditPointOpen,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#editPointComponent = new EditPointView({
       point: this.#point,
       destinations: this.#destinationsModel.getAll(),
       offers: this.#offersModel.getAll(),
-      onEditReset: this.#onEditPointReset,
-      onEditSubmit: this.#onEditPointSubmit,
+      onClose: this.#handleEditPointClose,
+      onSubmit: this.#handleEditPointSubmit,
+      onDelete: this.#handleEditPointDelete,
+      pointType: EditType.EDITING
     });
 
     if (!prevPointComponent || !prevEditPointComponent) {
@@ -80,23 +83,23 @@ export default class PointPresenter {
   destroy() {
     remove(this.#pointComponent);
     remove(this.#editPointComponent);
-    document.removeEventListener('keydown', this.#onDocumentEscKeydown);
+    document.removeEventListener('keydown', this.#handleDocumentEscKeydown);
   }
 
   #switchToEditForm = () => {
     replace(this.#editPointComponent, this.#pointComponent);
-    document.addEventListener('keydown', this.#onDocumentEscKeydown);
+    document.addEventListener('keydown', this.#handleDocumentEscKeydown);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
   };
 
   #switchToPoint = () => {
     replace(this.#pointComponent, this.#editPointComponent);
-    document.removeEventListener('keydown', this.#onDocumentEscKeydown);
+    document.removeEventListener('keydown', this.#handleDocumentEscKeydown);
     this.#mode = Mode.DEFAULT;
   };
 
-  #onDocumentEscKeydown = (evt) => {
+  #handleDocumentEscKeydown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       this.#editPointComponent.reset(this.#point);
@@ -104,24 +107,42 @@ export default class PointPresenter {
     }
   };
 
-  #onFavoriteClick = () => {
-    this.#handleDataChange({
-      ...this.#point,
-      isFavorite: !this.#point.isFavorite,
-    });
+  #handleFavoriteClick = () => {
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {
+        ...this.#point,
+        isFavorite: !this.#point.isFavorite,
+      }
+    );
   };
 
-  #onEditPointClick = () => {
+  #handleEditPointOpen = () => {
     this.#switchToEditForm();
   };
 
-  #onEditPointReset = () => {
+  #handleEditPointClose = () => {
     this.#editPointComponent.reset(this.#point);
     this.#switchToPoint();
   };
 
-  #onEditPointSubmit = (updatePoint) => {
-    this.#handleDataChange(updatePoint);
+  #handleEditPointSubmit = (point) => {
+    const isMinor = isBigDifference(point, this.#point);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinor ? UpdateType.MINOR : UpdateType.PATCH,
+      point
+    );
+
     this.#switchToPoint();
+  };
+
+  #handleEditPointDelete = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }

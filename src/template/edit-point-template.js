@@ -1,7 +1,25 @@
-import { POINT_TYPES } from '../const';
+import { ButtonLabel, EditType, POINT_TYPES } from '../const';
 import { POINT_DESTINATIONS } from '../mock/const';
 import { formatStringToDateTime } from '../utils/point';
 import { capitalize, getLastWord } from '../utils/common';
+import he from 'he';
+
+
+const createPointEditButtonsTemplate = ({pointType}) => {
+  const isEditing = pointType === EditType.EDITING;
+  const saveLabel = ButtonLabel.SAVE;
+  const resetLabel = isEditing ? ButtonLabel.DELETE : ButtonLabel.CANCEL;
+
+  return `
+    <button class="event__save-btn  btn  btn--blue" type="submit">${saveLabel}</button>
+    <button class="event__reset-btn" type="reset">${resetLabel}</button>
+    ${isEditing ? `
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`
+    : ''}
+  `;
+};
 
 const createPointTypesTemplate = () => `
   <fieldset class="event__type-group">
@@ -97,11 +115,10 @@ const createDestinationSectionTemplate = ({ destination }) => {
     </section>`;
 };
 
-export const createEditPointTemplate = ({ point, destinations, offers }) => {
+export const createEditPointTemplate = ({ point, destinations, offers, pointType }) => {
   const { basePrice, dateFrom, dateTo, offers: selectedOffers, type } = point;
-
   const currentDestination = destinations.find((destination) => destination.id === point.destination);
-  const currentOffers = offers.find((offer) => offer.type === type).offers;
+  const currentOffers = offers.find((offer) => offer.type === type)?.offers;
   return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -127,7 +144,7 @@ export const createEditPointTemplate = ({ point, destinations, offers }) => {
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${currentDestination?.name}"
+              value="${currentDestination ? he.encode(currentDestination.name) : ''}"
               list="destination-list-1"
             >
             ${createPointCitiesTemplate()}
@@ -140,7 +157,7 @@ export const createEditPointTemplate = ({ point, destinations, offers }) => {
               id="event-start-time-1"
               type="text"
               name="event-start-time"
-              value="${formatStringToDateTime(dateFrom)}"
+              value="${ point.dateFrom ? formatStringToDateTime(dateFrom) : ''}"
             >
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
@@ -149,7 +166,7 @@ export const createEditPointTemplate = ({ point, destinations, offers }) => {
               id="event-end-time-1"
               type="text"
               name="event-end-time"
-              value="${formatStringToDateTime(dateTo)}
+              value="${ point.dateTo ? formatStringToDateTime(dateTo) : ''}"
             >
           </div>
 
@@ -158,14 +175,10 @@ export const createEditPointTemplate = ({ point, destinations, offers }) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          ${createPointEditButtonsTemplate({pointType})}
         </header>
         <section class="event__details">
           ${currentOffers.length ? createOffersSectionTemplate({ offers: currentOffers, selectedOffers }) : ''}

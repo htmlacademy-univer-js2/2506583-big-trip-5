@@ -2,12 +2,12 @@ import AbstractView from '../framework/view/abstract-view';
 
 export default class AbstractRadioListView extends AbstractView {
   #items = [];
-  #onItemChange = null;
+  #handleItemChange = null;
 
   constructor ({ items, onItemChange }) {
     super();
     this.#items = items;
-    this.#onItemChange = onItemChange;
+    this.#handleItemChange = onItemChange;
     this.element.addEventListener('change', this.#itemChangeHandler);
   }
 
@@ -17,6 +17,6 @@ export default class AbstractRadioListView extends AbstractView {
 
   #itemChangeHandler = (evt) => {
     evt.preventDefault();
-    this.#onItemChange?.(evt.target.dataset.item);
+    this.#handleItemChange?.(evt.target.dataset.item);
   };
 }

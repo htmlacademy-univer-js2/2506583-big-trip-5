@@ -1,7 +1,7 @@
-import { DestinationsModel, OffersModel, PointsModel } from './model';
+import { DestinationsModel, FilterModel, OffersModel, PointsModel } from './model';
 import { TripInfoView } from './view';
 import { render, RenderPosition } from './framework/render.js';
-import { FilterPresenter, TripPresenter } from './presenter';
+import { FilterPresenter, NewPointButtonPresenter, TripPresenter } from './presenter';
 import MockService from './service/mock-service.js';
 
 const tripMainElement = document.querySelector('.trip-main');
@@ -13,19 +13,31 @@ const service = new MockService();
 const destinationsModel = new DestinationsModel({ service });
 const offersModel = new OffersModel({ service });
 const pointsModel = new PointsModel({ service });
+const filterModel = new FilterModel();
+
+const newPointButtonPresenter = new NewPointButtonPresenter({
+  container: tripMainElement,
+});
 
 const filterPresenter = new FilterPresenter({
-  filterContainer: tripControlsElement,
-  pointsModel
+  container: tripControlsElement,
+  pointsModel,
+  filterModel,
 });
+
 const tripPresenter = new TripPresenter({
-  tripContainer: tripEventsElement,
+  container: tripEventsElement,
   destinationsModel,
   offersModel,
   pointsModel,
+  filterModel,
+  newPointButtonPresenter,
 });
 
 
 render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
+newPointButtonPresenter.init({
+  onClick: tripPresenter.handleNewPointClick,
+});
 filterPresenter.init();
 tripPresenter.init();

@@ -1,21 +1,21 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { createPointTemplate } from '../template/point-view.js';
+import { createPointTemplate } from '../template/point-template.js';
 
 export default class PointView extends AbstractView {
   #point = null;
   #destination = null;
   #offers = null;
 
-  #onEditClick = null;
-  #onFavoriteClick = null;
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
 
   constructor({ point, destination, offers, onEditClick, onFavoriteClick }) {
     super();
     this.#point = point;
     this.#destination = destination;
     this.#offers = offers;
-    this.#onEditClick = onEditClick;
-    this.#onFavoriteClick = onFavoriteClick;
+    this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
 
     this.#addPointHandlers();
   }
@@ -39,11 +39,11 @@ export default class PointView extends AbstractView {
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onEditClick();
+    this.#handleEditClick();
   };
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onFavoriteClick();
+    this.#handleFavoriteClick();
   };
 }
