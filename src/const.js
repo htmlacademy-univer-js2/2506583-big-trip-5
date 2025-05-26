@@ -39,6 +39,17 @@ export const EnabledSortType = {
   [SortType.OFFERS]: false
 };
 
+export const POINT_DESTINATIONS = [
+  'Moscow',
+  'London',
+  'Amsterdam',
+  'Chamonix',
+  'Geneva',
+  'Saint Petersburg',
+  'Paris',
+  'Ekaterinburg',
+];
+
 export const POINT_TYPES = [
   'taxi',
   'flight',
@@ -76,6 +87,7 @@ export const UserAction = {
 };
 
 export const UpdateType = {
+  INIT: 'INIT',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR'
@@ -86,3 +98,9 @@ export const EditType = {
   CREATING: 'CREATING',
 };
 
+export const Method = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
+};

@@ -2,17 +2,21 @@ import { DestinationsModel, FilterModel, OffersModel, PointsModel } from './mode
 import { TripInfoView } from './view';
 import { render, RenderPosition } from './framework/render.js';
 import { FilterPresenter, NewPointButtonPresenter, TripPresenter } from './presenter';
-import MockService from './service/mock-service.js';
+import PointService from './service/point-service.js';
 
 const tripMainElement = document.querySelector('.trip-main');
 const pageMainElement = document.querySelector('.page-main');
 const tripEventsElement = pageMainElement.querySelector('.trip-events');
 const tripControlsElement = tripMainElement.querySelector('.trip-controls__filters');
 
-const service = new MockService();
+const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
+const AUTHORIZATION = 'Basic QwertyZXC123';
+
+const service = new PointService(END_POINT, AUTHORIZATION);
+
 const destinationsModel = new DestinationsModel({ service });
 const offersModel = new OffersModel({ service });
-const pointsModel = new PointsModel({ service });
+const pointsModel = new PointsModel({ service, destinationsModel, offersModel });
 const filterModel = new FilterModel();
 
 const newPointButtonPresenter = new NewPointButtonPresenter({
@@ -41,3 +45,4 @@ newPointButtonPresenter.init({
 });
 filterPresenter.init();
 tripPresenter.init();
+pointsModel.init();

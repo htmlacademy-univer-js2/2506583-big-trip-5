@@ -7,7 +7,6 @@ export default class OffersModel extends Observable {
   constructor({ service }) {
     super();
     this.#service = service;
-    this.#offers = this.#service.getOffers();
   }
 
   getAll() {
@@ -16,5 +15,10 @@ export default class OffersModel extends Observable {
 
   getByType(type) {
     return this.#offers.find((offer) => offer.type === type);
+  }
+
+  async init() {
+    this.#offers = await this.#service.getOffers();
+    return this.#offers;
   }
 }
