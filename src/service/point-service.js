@@ -19,11 +19,11 @@ export default class PointService extends ApiService {
     return this.fetchData({ url: 'points' });
   }
 
-  async updatePoint (updatedPoint) {
+  async updatePoint(point) {
     const response = await this._load({
-      url: `points/${updatedPoint.id}`,
+      url: `points/${point.id}`,
       method: Method.PUT,
-      body: JSON.stringify(updatedPoint),
+      body: JSON.stringify(point),
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
@@ -32,6 +32,23 @@ export default class PointService extends ApiService {
     return ApiService.parseResponse(response);
   }
 
-  addPoint = (data) => ({...data, id: crypto.randomUUID()});
-  deletePoint = () => {};
+  async addPoint(point) {
+    const response = await this._load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(point),
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+    });
+
+    return ApiService.parseResponse(response);
+  }
+
+  async deletePoint(point) {
+    await this._load({
+      url: `points/${point.id}`,
+      method: Method.DELETE,
+    });
+  }
 }

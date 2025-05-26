@@ -1,26 +1,47 @@
-import { ButtonLabel, EditType, POINT_TYPES, POINT_DESTINATIONS } from '../const';
+import { ButtonLabel, FormType, POINT_TYPES, POINT_DESTINATIONS } from '../const';
 import { formatStringToDateTime } from '../utils/point';
 import { capitalize, getLastWord } from '../utils/common';
 import he from 'he';
 
+const createPointEditButtonsTemplate = ({ pointType, isDisabled, isSaving, isDeleting }) => {
+  const isEditing = pointType === FormType.EDITING;
+  const saveLabel = isSaving ? ButtonLabel.SAVE_IN_PROGRESS : ButtonLabel.SAVE;
 
-const createPointEditButtonsTemplate = ({pointType}) => {
-  const isEditing = pointType === EditType.EDITING;
-  const saveLabel = ButtonLabel.SAVE;
-  const resetLabel = isEditing ? ButtonLabel.DELETE : ButtonLabel.CANCEL;
+  let resetLabel;
+  if (isEditing) {
+    resetLabel = isDeleting ? ButtonLabel.DELETE_IN_PROGRESS : ButtonLabel.DELETE;
+  } else {
+    resetLabel = ButtonLabel.CANCEL;
+  }
 
   return `
-    <button class="event__save-btn  btn  btn--blue" type="submit">${saveLabel}</button>
-    <button class="event__reset-btn" type="reset">${resetLabel}</button>
+    <button
+      class="event__save-btn  btn  btn--blue"
+      type="submit"
+      ${(isDisabled) ? 'disabled' : ''}
+    >
+      ${saveLabel}
+    </button>
+    <button
+      class="event__reset-btn"
+      type="reset"
+      ${(isDisabled) ? 'disabled' : ''}
+    >
+      ${resetLabel}
+    </button>
     ${isEditing ? `
-      <button class="event__rollup-btn" type="button">
+      <button
+        class="event__rollup-btn"
+        type="button"
+        ${isDisabled ? 'disabled' : ''}
+      >
         <span class="visually-hidden">Open event</span>
       </button>`
     : ''}
   `;
 };
 
-const createPointTypesTemplate = () => `
+const createPointTypesTemplate = ({ isDisabled }) => `
   <fieldset class="event__type-group">
     <legend class="visually-hidden">Event type</legend>
     ${POINT_TYPES.map((type) => `
@@ -30,6 +51,7 @@ const createPointTypesTemplate = () => `
           class="event__type-input  visually-hidden"
           type="radio" name="event-type"
           value="${type}"
+          ${isDisabled ? 'disabled' : ''}
         >
         <label
           class="event__type-label  event__type-label--${type}"
@@ -42,8 +64,11 @@ const createPointTypesTemplate = () => `
   </fieldset>
 `;
 
-const createPointCitiesTemplate = () => `
-  <datalist id="destination-list-1">
+const createPointCitiesTemplate = ({ isDisabled }) => `
+  <datalist
+    id="destination-list-1"
+    ${(isDisabled) ? 'disabled' : ''}
+  >
     ${POINT_DESTINATIONS.map((city) => `<option value="${city}"></option>`).join('')}
   </datalist>
 `;
@@ -114,7 +139,23 @@ const createDestinationSectionTemplate = ({ destination }) => {
     </section>`;
 };
 
-export const createEditPointTemplate = ({ point, destinations, offers, pointType }) => {
+const createEventDetailsTemplate = ({
+  currentDestination,
+  currentOffers,
+  selectedOffers
+}) => `
+  <section class="event__details">
+  ${currentOffers.length ?
+    createOffersSectionTemplate({ offers: currentOffers, selectedOffers })
+    : ''}
+  ${currentDestination ?
+    createDestinationSectionTemplate({ destination: currentDestination })
+    : ''}
+  </section>
+`;
+
+export const createEditPointTemplate = ({ state, destinations, offers, pointType }) => {
+  const { point, isDisabled, isSaving, isDeleting } = state;
   const { basePrice, dateFrom, dateTo, offers: selectedOffers, type } = point;
   const currentDestination = destinations.find((destination) => destination.id === point.destination);
   const currentOffers = offers.find((offer) => offer.type === type)?.offers;
@@ -127,10 +168,14 @@ export const createEditPointTemplate = ({ point, destinations, offers, pointType
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-
+            <input
+              class="event__type-toggle  visually-hidden"
+              id="event-type-toggle-1"
+              type="checkbox"
+              ${isDisabled ? 'disabled' : ''}
+            >
             <div class="event__type-list">
-              ${createPointTypesTemplate()}
+              ${createPointTypesTemplate({ isDisabled })}
             </div>
           </div>
 
@@ -145,8 +190,9 @@ export const createEditPointTemplate = ({ point, destinations, offers, pointType
               name="event-destination"
               value="${currentDestination ? he.encode(currentDestination.name) : ''}"
               list="destination-list-1"
+              ${isDisabled ? 'disabled' : ''}
             >
-            ${createPointCitiesTemplate()}
+            ${createPointCitiesTemplate({ isDisabled })}
           </div>
 
           <div class="event__field-group  event__field-group--time">
@@ -157,6 +203,7 @@ export const createEditPointTemplate = ({ point, destinations, offers, pointType
               type="text"
               name="event-start-time"
               value="${ point.dateFrom ? formatStringToDateTime(dateFrom) : ''}"
+              ${isDisabled ? 'disabled' : ''}
             >
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
@@ -166,6 +213,7 @@ export const createEditPointTemplate = ({ point, destinations, offers, pointType
               type="text"
               name="event-end-time"
               value="${ point.dateTo ? formatStringToDateTime(dateTo) : ''}"
+              ${isDisabled ? 'disabled' : ''}
             >
           </div>
 
@@ -174,15 +222,19 @@ export const createEditPointTemplate = ({ point, destinations, offers, pointType
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
+            <input
+              class="event__input  event__input--price"
+              id="event-price-1"
+              type="text"
+              name="event-price"
+              value="${he.encode(String(basePrice))}"
+              ${isDisabled ? 'disabled' : ''}
+            >
           </div>
 
-          ${createPointEditButtonsTemplate({pointType})}
+          ${createPointEditButtonsTemplate({ pointType, isDisabled, isSaving, isDeleting })}
         </header>
-        <section class="event__details">
-          ${currentOffers.length ? createOffersSectionTemplate({ offers: currentOffers, selectedOffers }) : ''}
-          ${currentDestination ? createDestinationSectionTemplate({ destination: currentDestination }) : ''}
-        </section>
+        ${createEventDetailsTemplate({ currentDestination, currentOffers, selectedOffers })}
       </form>
     </li>
   `;

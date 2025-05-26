@@ -1,4 +1,4 @@
-import { EditType, Mode, UpdateType, UserAction } from '../const';
+import { FormType, Mode, UpdateType, UserAction } from '../const';
 import { remove, render, replace } from '../framework/render';
 import { isEscapeKey } from '../utils/common';
 import { isBigDifference } from '../utils/point';
@@ -53,7 +53,7 @@ export default class PointPresenter {
       onClose: this.#handleEditPointClose,
       onSubmit: this.#handleEditPointSubmit,
       onDelete: this.#handleEditPointDelete,
-      pointType: EditType.EDITING
+      pointType: FormType.EDITING
     });
 
     if (!prevPointComponent || !prevEditPointComponent) {
@@ -86,6 +86,30 @@ export default class PointPresenter {
     document.removeEventListener('keydown', this.#handleDocumentEscKeydown);
   }
 
+  setSaving = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isSaving: true
+      });
+    }
+  };
+
+  setAborting = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.shake(this.#resetFormState);
+    } else {
+      this.#editPointComponent.shake();
+    }
+  };
+
+  setDeleting = () => {
+    this.#editPointComponent.updateElement({
+      isDisabled: true,
+      isDeleting: true
+    });
+  };
+
   #switchToEditForm = () => {
     replace(this.#editPointComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#handleDocumentEscKeydown);
@@ -99,8 +123,16 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   };
 
+  #resetFormState = () => {
+    this.#editPointComponent.updateElement({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    });
+  };
+
   #handleDocumentEscKeydown = (evt) => {
-    if (isEscapeKey(evt)) {
+    if (isEscapeKey(evt) && !this.#editPointComponent.isDisabled) {
       evt.preventDefault();
       this.#editPointComponent.reset(this.#point);
       this.#switchToPoint();
@@ -123,8 +155,10 @@ export default class PointPresenter {
   };
 
   #handleEditPointClose = () => {
-    this.#editPointComponent.reset(this.#point);
-    this.#switchToPoint();
+    if (!this.#editPointComponent.isDisabled) {
+      this.#editPointComponent.reset(this.#point);
+      this.#switchToPoint();
+    }
   };
 
   #handleEditPointSubmit = (point) => {
@@ -135,7 +169,9 @@ export default class PointPresenter {
       point
     );
 
-    this.#switchToPoint();
+    if (!this.#editPointComponent.isDisabled) {
+      this.#switchToPoint();
+    }
   };
 
   #handleEditPointDelete = (point) => {
