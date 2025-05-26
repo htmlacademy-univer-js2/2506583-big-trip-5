@@ -2,7 +2,6 @@ import { createElement } from '../render';
 
 const FILTER_ELEMENTS = ['Everything', 'Future', 'Present', 'Past', 'Accept filter'];
 
-
 const createFilterItemTemplate = (type) =>
   `<div class="trip-filters__filter">
     <input id="filter-${type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}" checked>
