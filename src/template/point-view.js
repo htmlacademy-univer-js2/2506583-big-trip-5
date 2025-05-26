@@ -5,10 +5,10 @@ import {
   getPointDuration,
 } from '../utils/point';
 
-const createOffersTemplate = ({ offers, offerIds }) => `
+const createOffersTemplate = ({ currentOffers, selectedOffers }) => `
   <ul class="event__selected-offers">
-  ${offers
-    .filter((offer) => offerIds.includes(offer.id))
+  ${currentOffers
+    .filter((offer) => selectedOffers.includes(offer.id))
     .map((offer) => `
       <li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
@@ -20,7 +20,8 @@ const createOffersTemplate = ({ offers, offerIds }) => `
 `;
 
 export const createPointTemplate = ({ point, destination, offers }) => {
-  const { basePrice, dateFrom, dateTo, isFavorite, type, offers: offerIds } = point;
+  const { basePrice, dateFrom, dateTo, isFavorite, type, offers: selectedOffers } = point;
+  const currentOffers = offers.offers;
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
   return `
@@ -49,7 +50,7 @@ export const createPointTemplate = ({ point, destination, offers }) => {
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        ${createOffersTemplate({ ...offers, offerIds })}
+        ${createOffersTemplate({ currentOffers, selectedOffers })}
         <button class="event__favorite-btn ${favoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
