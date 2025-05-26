@@ -1,11 +1,31 @@
-import MainPresenter from './presenter/main-presenter.js';
-import TripPointModel from './model/trip-point-model.js';
+import { DestinationsModel, OffersModel, PointsModel } from './model';
+import { TripInfoView } from './view';
+import { render, RenderPosition } from './framework/render.js';
+import { FilterPresenter, TripPresenter } from './presenter';
+import MockService from './service/mock-service.js';
 
-const tripControlFilters = document.querySelector('.trip-controls__filters');
-const tripEvents = document.querySelector('.trip-events');
+const tripMainElement = document.querySelector('.trip-main');
+const pageMainElement = document.querySelector('.page-main');
+const tripEventsElement = pageMainElement.querySelector('.trip-events');
+const tripControlsElement = tripMainElement.querySelector('.trip-controls__filters');
 
-const tripPoint = new TripPointModel();
+const service = new MockService();
+const destinationsModel = new DestinationsModel({ service });
+const offersModel = new OffersModel({ service });
+const pointsModel = new PointsModel({ service });
 
-const mainPresenter = new MainPresenter(tripEvents, tripControlFilters, tripPoint);
+const filterPresenter = new FilterPresenter({
+  filterContainer: tripControlsElement,
+  pointsModel
+});
+const tripPresenter = new TripPresenter({
+  tripContainer: tripEventsElement,
+  destinationsModel,
+  offersModel,
+  pointsModel,
+});
 
-mainPresenter.init();
+
+render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
+filterPresenter.init();
+tripPresenter.init();
