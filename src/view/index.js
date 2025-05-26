@@ -7,6 +7,7 @@ import SortView from './sort-view';
 import EmptyListView from './empty-list-view';
 import NewPointButtonView from './new-point-button-view';
 import LoadingView from './loading-view';
+import ErrorView from './error-view';
 
 export {
   EditPointView,
@@ -18,4 +19,5 @@ export {
   EmptyListView,
   NewPointButtonView,
   LoadingView,
+  ErrorView,
 };

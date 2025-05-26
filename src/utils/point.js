@@ -13,13 +13,18 @@ export const formatStringToTime = (date) => dayjs(date).format('HH:mm');
 
 export const getPointDuration = (dateFrom, dateTo) => {
   const timeDiff = dayjs(dateTo).diff(dayjs(dateFrom));
+  const days = dayjs.duration(timeDiff).days()
+    + dayjs.duration(timeDiff).months() * 31
+    + dayjs.duration(timeDiff).years() * 365;
+  const hours = dayjs.duration(timeDiff).hours();
+  const minutes = dayjs.duration(timeDiff).minutes();
 
   if (timeDiff >= TimePeriods.MSEC_IN_DAY) {
-    return dayjs.duration(timeDiff).format('DD[D] HH[H] mm[M]');
+    return dayjs.duration({ days, hours, minutes }).format('DD[D] HH[H] mm[M]');
   } else if (timeDiff >= TimePeriods.MSEC_IN_HOUR) {
-    return dayjs.duration(timeDiff).format('HH[H] mm[M]');
+    return dayjs.duration({ days, hours, minutes }).format('HH[H] mm[M]');
   }
-  return dayjs.duration(timeDiff).format('mm[M]');
+  return dayjs.duration({ days, hours, minutes }).format('mm[M]');
 };
 
 export const isBigDifference = (pointA, pointB) =>
