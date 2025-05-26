@@ -4,6 +4,11 @@ export const TimePeriods = {
   MSEC_IN_DAY: 24 * 60 * 60 * 1000
 };
 
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export const PointFilters = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -65,7 +70,9 @@ export const POINT_TYPES = [
 export const ButtonLabel = {
   CANCEL: 'Cancel',
   DELETE: 'Delete',
-  SAVE: 'Save'
+  SAVE: 'Save',
+  DELETE_IN_PROGRESS: 'Deleting...',
+  SAVE_IN_PROGRESS: 'Saving...'
 };
 
 const DEFAULT_TYPE = 'flight';
@@ -93,7 +100,7 @@ export const UpdateType = {
   MAJOR: 'MAJOR'
 };
 
-export const EditType = {
+export const FormType = {
   EDITING: 'EDITING',
   CREATING: 'CREATING',
 };

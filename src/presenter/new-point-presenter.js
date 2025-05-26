@@ -1,5 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
-import { UserAction, UpdateType, EditType } from '../const.js';
+import { UserAction, UpdateType, FormType } from '../const.js';
 import { EditPointView } from '../view';
 import { isEscapeKey } from '../utils/common';
 
@@ -34,7 +34,7 @@ export default class NewPointPresenter {
         offers: this.#offersModel.getAll(),
         onSubmit: this.#handleFormSubmit,
         onClose: this.#handleFormClose,
-        pointType: EditType.CREATING
+        pointType: FormType.CREATING
       });
 
       render(this.#newPointComponent, this.#container, RenderPosition.AFTERBEGIN);
@@ -52,14 +52,31 @@ export default class NewPointPresenter {
     }
   };
 
+  setSaving = () => {
+    this.#newPointComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting = () => {
+    this.#newPointComponent.shake(this.#resetFormState);
+  };
+
+  #resetFormState = () => {
+    this.#newPointComponent.updateElement({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    });
+  };
+
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
       point
     );
-
-    this.destroy({ isCanceled: false });
   };
 
   #handleFormClose = () => {
