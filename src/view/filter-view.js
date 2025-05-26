@@ -1,15 +1,8 @@
-import AbstractView from '../framework/view/abstract-view.js';
 import { createFilterTemplate } from '../template/filter-template.js';
+import AbstractRadioListView from './abstract-radio-list-view.js';
 
-export default class FilterView extends AbstractView {
-  #filters = null;
-
-  constructor ({ filters }) {
-    super();
-    this.#filters = filters;
-  }
-
+export default class FilterView extends AbstractRadioListView {
   get template() {
-    return createFilterTemplate({ filters: this.#filters });
+    return createFilterTemplate({ filters: this.items });
   }
 }

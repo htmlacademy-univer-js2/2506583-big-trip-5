@@ -51,4 +51,8 @@ export default class MockService {
   getPoints() {
     return this.#points;
   }
+
+  updatePoint = (updatedPoint) => updatedPoint;
+  addPoint = (data) => ({...data, id: crypto.randomUUID()});
+  deletePoint() {}
 }
