@@ -33,7 +33,7 @@ export default class PointView extends AbstractView {
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
     this.element
-      .querySelector('.event__favorite-icon')
+      .querySelector('.event__favorite-btn')
       .addEventListener('click', this.#favoriteClickHandler);
   };
 

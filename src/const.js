@@ -44,29 +44,6 @@ export const EnabledSortType = {
   [SortType.OFFERS]: false
 };
 
-export const POINT_DESTINATIONS = [
-  'Moscow',
-  'London',
-  'Amsterdam',
-  'Chamonix',
-  'Geneva',
-  'Saint Petersburg',
-  'Paris',
-  'Ekaterinburg',
-];
-
-export const POINT_TYPES = [
-  'taxi',
-  'flight',
-  'bus',
-  'train',
-  'ship',
-  'drive',
-  'check-in',
-  'sightseeing',
-  'restaurant',
-];
-
 export const ButtonLabel = {
   CANCEL: 'Cancel',
   DELETE: 'Delete',

@@ -1,4 +1,4 @@
-import { PointListView, EmptyListView, LoadingView } from '../view';
+import { PointListView, EmptyListView, LoadingView, ErrorView } from '../view';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { NewPointPresenter, PointPresenter, SortPresenter } from '../presenter';
 import { sort } from '../utils/sort.js';
@@ -9,6 +9,7 @@ import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 export default class TripPresenter {
   #container = null;
   #emptyListComponent = null;
+  #errorComponent = new ErrorView();
   #loadingComponent = new LoadingView();
   #pointListComponent = new PointListView();
 
@@ -98,6 +99,7 @@ export default class TripPresenter {
     this.#newPointButtonPresenter.enableButton();
 
     if (this.#isError) {
+      this.#renderError();
       this.#clearTrip({ resetSortType: true });
       return;
     }
@@ -138,6 +140,10 @@ export default class TripPresenter {
 
   #renderLoader = () => {
     render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
+  };
+
+  #renderError = () => {
+    render(this.#errorComponent, this.#container, RenderPosition.AFTERBEGIN);
   };
 
   #renderPointList = () => {
@@ -210,9 +216,11 @@ export default class TripPresenter {
     switch (updateType) {
       case UpdateType.INIT:
         if (data.error) {
+          this.#isLoading = false;
           this.#isError = true;
         } else {
           this.#isLoading = false;
+          this.#isError = false;
           remove(this.#loadingComponent);
         }
         this.#renderTrip();

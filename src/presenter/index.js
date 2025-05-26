@@ -4,6 +4,7 @@ import PointPresenter from './point-presenter';
 import SortPresenter from './sort-presenter';
 import NewPointButtonPresenter from './new-point-button-presenter';
 import NewPointPresenter from './new-point-presenter';
+import TripInfoPresenter from './trip-info-presenter';
 
 export {
   TripPresenter,
@@ -12,4 +13,5 @@ export {
   SortPresenter,
   NewPointButtonPresenter,
   NewPointPresenter,
+  TripInfoPresenter,
 };
