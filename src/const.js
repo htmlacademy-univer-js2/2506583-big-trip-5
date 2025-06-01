@@ -1,18 +1,90 @@
-const CITIES = ['Moscow', 'New-York', 'Kazan', 'London', 'Sochi', 'Berlin'];
-const TRANSPORT = ['flight', 'bus', 'taxi', 'drive', 'train', 'transport'];
-const OFFERS = ['add luggage', 'switch to comfort', 'excursion', 'swimming pool', 'delicious lunch', 'add meal'];
-const DESCRIPTIONS = [
-  'The golden sunlight filtered through the leaves, painting the forest floor in dappled patterns.',
-  'A crisp mountain breeze carried the scent of pine as we ascended the winding trail.',
-  'The waves crashed rhythmically against the shore, their foamy fingers retreating across warm sand.',
-  'Neon signs flickered to life as the city awakened for another sleepless night.',
-  'The aroma of freshly baked bread mingled with the rich coffee scent from the corner café.',
-  'Centuries-old cobblestones whispered stories underfoot as we explored the historic quarter.',
-  'Her laughter echoed through the vineyard, as intoxicating as the wine we were tasting.',
-  'We shared secrets under a star-strewn sky, the firelight dancing in our eyes.',
-  'The old bridge stood witness to countless love stories - now it held ours too.',
-  'The GPS insisted we turn left into the lake - we opted for plan B and local advice.',
-  'Our "quick detour" added three hours to the trip... and became its highlight.',
-];
+export const TimePeriods = {
+  MSEC_IN_SEC: 1000,
+  MSEC_IN_HOUR: 60 * 60 * 1000,
+  MSEC_IN_DAY: 24 * 60 * 60 * 1000
+};
 
-export {CITIES, TRANSPORT, OFFERS, DESCRIPTIONS};
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+export const PointFilters = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+export const EmptyListMessage = {
+  [PointFilters.EVERYTHING]: 'Click New Event to create your first point',
+  [PointFilters.FUTURE]: 'There are no future events now',
+  [PointFilters.PRESENT]: 'There are no present events now',
+  [PointFilters.PAST]: 'There are no past events now'
+};
+
+export const Mode = {
+  DEFAULT: 'default',
+  EDITING: 'editing',
+};
+
+export const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+
+export const EnabledSortType = {
+  [SortType.DAY]: true,
+  [SortType.EVENT]: false,
+  [SortType.TIME]: true,
+  [SortType.PRICE]: true,
+  [SortType.OFFERS]: false
+};
+
+export const ButtonLabel = {
+  CANCEL: 'Cancel',
+  DELETE: 'Delete',
+  SAVE: 'Save',
+  DELETE_IN_PROGRESS: 'Deleting...',
+  SAVE_IN_PROGRESS: 'Saving...'
+};
+
+const DEFAULT_TYPE = 'flight';
+
+export const POINT_EMPTY = {
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: DEFAULT_TYPE,
+};
+
+export const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+export const UpdateType = {
+  INIT: 'INIT',
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
+
+export const FormType = {
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
+};
+
+export const Method = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
+};
